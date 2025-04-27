@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "bleed",
+	"version": "${version}",
+	"name": "Bleed",
+	"description": "Bleed when getting hit by something",
+	"authors": [
+		"TrongThang"
+	],
+	"contact": {
+		"homepage": "",
+		"sources": ""
+	},
+	"license": "MIT",
+	"icon": "assets/bleed/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.trongthang.bleed.Bleed"
+		],
+		"client": [
+			"com.trongthang.bleed.client.BleedClient"
+		],
+		"fabric-datagen": [
+			"com.trongthang.bleed.BleedDataGenerator"
+		]
+	},
+	"mixins": [
+		"bleed.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

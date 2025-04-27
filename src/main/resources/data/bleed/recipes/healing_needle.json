@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "BEB",
+    " C "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:iron_nugget"
+    },
+    "B": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:glass"
+    },
+    "E": {
+      "item": "minecraft:red_mushroom"
+    }
+  },
+  "result": {
+    "item": "bleed:healing_needle",
+    "count": 1
+  }
+}
