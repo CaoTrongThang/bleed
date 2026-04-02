@@ -2,7 +2,6 @@ package com.trongthang.bleed.effects;
 
 import com.trongthang.bleed.ModConfig;
 import com.trongthang.bleed.managers.EffectsManager;
-import net.combatroll.CombatRoll;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -32,7 +31,8 @@ public class BleedingEffect extends StatusEffect {
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
 
-        if (entity.getWorld().isClient) return;
+        if (entity.getWorld().isClient)
+            return;
         ServerWorld world = (ServerWorld) entity.getWorld();
 
         if (world.getTimeOfDay() % ModConfig.getInstance().bleedingCheckInterval == 0) {
@@ -40,19 +40,24 @@ public class BleedingEffect extends StatusEffect {
             float damage = ModConfig.getInstance().bleedingDamage;
 
             if (ModConfig.getInstance().bleedingDamageDecreaseByArmor) {
-                damage =  Math.min(calculateAdjustedDamageBaseOnArmor(entity), modConfig.maxBleedingDamageForHostileMobs);
+                damage = Math.min(calculateAdjustedDamageBaseOnArmor(entity),
+                        modConfig.maxBleedingDamageForHostileMobs);
                 entity.damage(entity.getDamageSources().magic(), damage);
             } else {
 
                 if (entity instanceof HostileEntity) {
-                    if(ModConfig.getInstance().bleedingDamageScaleForHostielMobs){
-                        damage = Math.min(damage + ((entity.getMaxHealth() * modConfig.bleedingDamageScaleByPercentOfHostileMobs) / 100f), modConfig.maxBleedingDamageForHostileMobs);;
+                    if (ModConfig.getInstance().bleedingDamageScaleWithHostileMobsHealth) {
+                        damage = Math.min(damage
+                                + ((entity.getMaxHealth() * modConfig.bleedingDamageScaleByPercentOfHostileMobsHealth)
+                                        / 100f),
+                                modConfig.maxBleedingDamageForHostileMobs);
+                        ;
                         entity.damage(entity.getDamageSources().magic(), damage);
                     } else {
                         entity.damage(entity.getDamageSources().magic(), damage);
                     }
                 } else {
-                    if(entity.isSneaking()){
+                    if (entity.isSneaking()) {
                         entity.damage(entity.getDamageSources().magic(), damage / 2);
                     } else {
                         entity.damage(entity.getDamageSources().magic(), damage);
@@ -77,15 +82,16 @@ public class BleedingEffect extends StatusEffect {
     }
 
     public static boolean shouldBleed(LivingEntity entity, float damage) {
-        if(entity.getWorld().isClient) return false;
-        if (entity.hasStatusEffect(EffectsManager.BLEEDING)) return false;
-        if(hasRollInvulnerability(entity)) return false;
-
-
+        if (entity.getWorld().isClient)
+            return false;
+        if (entity.hasStatusEffect(EffectsManager.BLEEDING))
+            return false;
+        if (hasRollInvulnerability(entity))
+            return false;
 
         if (entity.hasStatusEffect(StatusEffects.RESISTANCE)) {
-            if(entity.getStatusEffect(StatusEffects.RESISTANCE).getAmplifier() > 100)
-            return false;
+            if (entity.getStatusEffect(StatusEffects.RESISTANCE).getAmplifier() > 100)
+                return false;
         }
 
         String entityId = EntityType.getId(entity.getType()).toString();
@@ -93,7 +99,8 @@ public class BleedingEffect extends StatusEffect {
             return false;
         }
 
-        if (damage < ModConfig.getInstance().minDamageToGetBleed) return false;
+        if (damage < ModConfig.getInstance().minDamageToGetBleed)
+            return false;
         float baseChance = ModConfig.getInstance().bleedingChance;
         final float armor = entity.getArmor();
 
@@ -125,16 +132,20 @@ public class BleedingEffect extends StatusEffect {
 
         float reduction = armor / (armor + k);
         float adjusted = 0;
-        if(ModConfig.getInstance().bleedingDamageScaleForHostielMobs){
+        if (ModConfig.getInstance().bleedingDamageScaleWithHostileMobsHealth) {
             if (entity instanceof HostileEntity) {
-                adjusted = (ModConfig.getInstance().bleedingDamage + ((entity.getMaxHealth() * ModConfig.getInstance().bleedingDamageScaleByPercentOfHostileMobs) / 100)) * (1 - reduction);
+                adjusted = (ModConfig.getInstance().bleedingDamage + ((entity.getMaxHealth()
+                        * ModConfig.getInstance().bleedingDamageScaleByPercentOfHostileMobsHealth) / 100))
+                        * (1 - reduction);
             }
         } else {
             adjusted = (ModConfig.getInstance().bleedingDamage * (1 - reduction));
         }
 
         if (ModConfig.getInstance().doesSneakingReduceBleedingDamage) {
-            float finalDamage = entity.isSneaking() ? adjusted / ModConfig.getInstance().bleedingDamageReducedWhileSneaking : adjusted;
+            float finalDamage = entity.isSneaking()
+                    ? adjusted / ModConfig.getInstance().bleedingDamageReducedWhileSneaking
+                    : adjusted;
             return Math.max(minDamage, finalDamage);
         } else {
             return Math.max(minDamage, adjusted);
