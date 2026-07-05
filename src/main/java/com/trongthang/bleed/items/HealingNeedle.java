@@ -19,7 +19,7 @@ import java.util.List;
 
 public class HealingNeedle extends Item {
     public HealingNeedle(Settings settings) {
-        super(settings.maxCount(1).maxDamage(20));
+        super(settings.maxCount(16));
     }
 
     @Override
@@ -58,17 +58,16 @@ public class HealingNeedle extends Item {
 
             player.heal(10.0f);
 
-            if(player.hasStatusEffect(EffectsManager.BLEEDING)){
+            if (player.hasStatusEffect(EffectsManager.BLEEDING)) {
                 player.removeStatusEffect(EffectsManager.BLEEDING);
             }
 
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 300, 1));
 
-            // Damage the needle (reduce durability)
-            stack.damage(stack.getMaxDamage(), player, (entity) -> {
-                entity.sendToolBreakStatus(Hand.MAIN_HAND);
-            });
-
+            // Consume 1 needle if not in creative mode
+            if (!player.getAbilities().creativeMode) {
+                stack.decrement(1);
+            }
 
             // Optional: Add a cooldown (20 ticks = 1 second)
             player.getItemCooldownManager().set(this, 20);
